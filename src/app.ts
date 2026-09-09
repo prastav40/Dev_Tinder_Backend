@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { RequestRouterauth } from './routes/auth.js';
 import {RequestRouterProfile} from "./routes/profile.js"
 import { RequestRouterFeed } from './routes/feed.js';
+import { RequestRouterRequest } from './routes/request.js';
 
 const app: Express = express();
 const port: number = 3000;
@@ -15,6 +16,7 @@ app.use(cookieParser());
 app.use("/",RequestRouterauth)
 app.use("/",RequestRouterProfile)
 app.use("/",RequestRouterFeed)
+app.use("/",RequestRouterRequest)
 
 const startServer = async (): Promise<void> => {
   await connectDB();

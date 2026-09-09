@@ -1,6 +1,6 @@
 import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { user } from "../models/Schema.js";
+import { User } from "../models/Schema.js";
 
 declare global {
   namespace Express {
@@ -21,7 +21,7 @@ export const userAuth = async (req: Request, res: Response, next: NextFunction) 
     const decodedMessage = jwt.verify(token, "PRASTAV") as { _id: string };
     const { _id } = decodedMessage;
 
-    const targetUser = await user.findById(_id);
+    const targetUser = await User.findById(_id);
     if (!targetUser) {
       throw new Error("User not found");
     }

@@ -1,7 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-const userSchema = new mongoose.Schema(
+// 1. Define the TypeScript Interface for strict typing
+export interface IUser extends Document {
+  email: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  gender: "male" | "female" | "other";
+  password: string;
+  photoUrl: string;
+  skills: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 2. Pass the interface into the Schema
+const userSchema = new Schema<IUser>(
   {
     email: {
       type: String,
@@ -9,7 +24,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       validate: {
-        validator: (value) => {
+        validator: (value: string) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           return emailRegex.test(value);
         },
@@ -45,7 +60,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minLength: [8, "Password must be at least 8 characters long"],
+      minlength: [8, "Password must be at least 8 characters long"],
       match: [
         /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/,
         "Password must contain at least one uppercase letter, one number, and one special character"
@@ -86,14 +101,14 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function () {
-
-  console.log(this)
+  console.log(this);
   if (!this.isModified("password")) {
     return;
   }
 
   const saltRounds = 10;
-  this.password = await bcrypt.hash(this.password as string, saltRounds);
+  this.password = await bcrypt.hash(this.password, saltRounds);
 });
 
-export const user = mongoose.model('users', userSchema);
+// 3. Pass the interface into the Model wrapper
+export const User = mongoose.model<IUser>('User', userSchema);

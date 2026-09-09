@@ -1,5 +1,5 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
-import { user } from "../models/Schema.js";
+import { User } from "../models/Schema.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 
@@ -11,7 +11,7 @@ interface LoginRequestBody {
 }
 
 RequestRouterauth.post("/signup", async (req: Request, res: Response) => {
-  const data = new user(req.body);
+  const data = new User(req.body);
   try {
     await data.save();
     res.send("user saved successfully")
@@ -29,7 +29,7 @@ RequestRouterauth.post("/login", async (req: Request<{}, {}, LoginRequestBody>, 
       return res.status(400).send("Email and password are required");
     }
 
-    const existingUser = await user.findOne({ email });
+    const existingUser = await User.findOne({ email });
     
     if (!existingUser) {
       return res.status(401).send("Invalid credentials");
@@ -54,6 +54,16 @@ RequestRouterauth.post("/login", async (req: Request<{}, {}, LoginRequestBody>, 
 
   } catch (err: any) {
     res.status(400).send(err.message);
+  }
+});
+
+RequestRouterauth.post("/logout", async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token");
+
+    res.status(200).json({ message: "Logout successful!" });
+  } catch (err: any) {
+    res.status(400).json({ message: "Something went wrong: " + err.message });
   }
 });
 

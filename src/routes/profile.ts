@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import { userAuth } from '../middlewares/middleware.js';
-import { user } from '../models/Schema.js';
+import { User } from '../models/Schema.js';
 
 
 const RequestRouterProfile = express.Router();
@@ -33,7 +33,7 @@ RequestRouterProfile.patch("/profile/update",userAuth, async (req: Request, res:
   }
 
   try {
-    const data = await user.findByIdAndUpdate(
+    const data = await User.findByIdAndUpdate(
       id,
       body,
       { returnDocument: 'after', runValidators: true }
