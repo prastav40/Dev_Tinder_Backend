@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-// 1. Define the TypeScript Interface for strict typing
 export interface IUser extends Document {
   email: string;
   firstName: string;
@@ -15,7 +14,6 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
-// 2. Pass the interface into the Schema
 const userSchema = new Schema<IUser>(
   {
     email: {
@@ -29,7 +27,8 @@ const userSchema = new Schema<IUser>(
           return emailRegex.test(value);
         },
         message: "{VALUE} is not a valid email address!"
-      }
+      },
+      unique:true
     },
     firstName: {
       type: String,
@@ -67,14 +66,9 @@ const userSchema = new Schema<IUser>(
       ]
     },
     photoUrl: {
-      type: String,
-      default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-      trim: true,
-      match: [
-        /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/,
-        "Please enter a valid image URL"
-      ]
-    },
+    type: String,
+    default: "https://your-default-avatar-url.jpg" // Good practice to have a fallback
+   },
     skills: {
       type: [String],
       default: [],
