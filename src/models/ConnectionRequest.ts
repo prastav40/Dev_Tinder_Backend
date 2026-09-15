@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// 1. Define the TypeScript Interface for strict typing
 export interface IConnectionRequest extends Document {
   fromUserId: mongoose.Types.ObjectId;
   toUserId: mongoose.Types.ObjectId;
@@ -9,7 +8,6 @@ export interface IConnectionRequest extends Document {
   updatedAt: Date;
 }
 
-// 2. Pass the interface into the Schema
 const connectionRequestSchema = new Schema<IConnectionRequest>({
   fromUserId: { 
     type: Schema.Types.ObjectId, 

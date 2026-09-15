@@ -5,7 +5,7 @@ import { User } from '../models/Schema.js';
 
 const RequestRouterProfile = express.Router();
 
-RequestRouterProfile.get("/profile/view",userAuth, async (req: Request, res: Response) => {
+RequestRouterProfile.get("/profile",userAuth, async (req: Request, res: Response) => {
   try {
     res.send(req.user);
   } catch (err: any) { 

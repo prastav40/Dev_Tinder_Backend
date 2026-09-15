@@ -67,7 +67,7 @@ const userSchema = new Schema<IUser>(
     },
     photoUrl: {
     type: String,
-    default: "https://your-default-avatar-url.jpg" // Good practice to have a fallback
+    default: "https://your-default-avatar-url.jpg" 
    },
     skills: {
       type: [String],
