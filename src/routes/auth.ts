@@ -11,6 +11,8 @@ interface LoginRequestBody {
   password?: string;
 }
 
+
+
 RequestRouterauth.post("/signup", upload.single("photo"), async (req: Request, res: Response) => {
   try {
     // 1. Extract the standard text fields from req.body
@@ -34,11 +36,20 @@ RequestRouterauth.post("/signup", upload.single("photo"), async (req: Request, r
       photoUrl
     });
 
-    await data.save();
+
+    const savedUser=await data.save();
+
+    const token = jwt.sign({ _id: savedUser._id }, "PRASTAV", {
+      expiresIn: "7d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     
-    // Send a 201 Created status along with the user data
     res.status(201).send(data);
-  } catch (err: any) { 
+  } catch (err: any) {
     res.status(400).send({ message: err.message || "Signup failed" });
   }
 });
@@ -53,7 +64,7 @@ RequestRouterauth.post("/login", async (req: Request<{}, {}, LoginRequestBody>, 
     }
 
     const existingUser = await User.findOne({ email });
-    
+
     if (!existingUser) {
       return res.status(401).send("Invalid credentials");
     }
@@ -67,10 +78,10 @@ RequestRouterauth.post("/login", async (req: Request<{}, {}, LoginRequestBody>, 
     const token = jwt.sign({ _id: existingUser._id }, "PRASTAV", {
       expiresIn: "7d",
     });
-    
+
     res.cookie("token", token, {
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).send(existingUser);
