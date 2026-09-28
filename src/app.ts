@@ -6,12 +6,15 @@ import { RequestRouterauth } from './routes/auth.js';
 import { RequestRouterProfile } from "./routes/profile.js";
 import { RequestRouterFeed } from './routes/feed.js';
 import { RequestRouterRequest } from './routes/request.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app: Express = express();
 const port: number = 3000;
 
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: process.env.Backend_Url, 
   credentials: true 
 }));
 

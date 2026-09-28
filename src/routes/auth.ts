@@ -12,14 +12,14 @@ interface LoginRequestBody {
 }
 
 
-
 RequestRouterauth.post("/signup", upload.single("photo"), async (req: Request, res: Response) => {
   try {
     // 1. Extract the standard text fields from req.body
     const { email, password, firstName, lastName, age, gender, skills } = req.body;
 
-    // 2. Extract the Cloudinary URL attached by the multer middleware
+    // 2. Extract the Cloudinary URL and public_id attached by the multer middleware
     const photoUrl = req.file ? req.file.path : undefined;
+    const photoId = req.file ? req.file.filename : undefined;
 
     // 3. FormData sends arrays as strings, so we must parse it back into a JavaScript array
     const parsedSkills = skills ? JSON.parse(skills) : [];
@@ -33,27 +33,29 @@ RequestRouterauth.post("/signup", upload.single("photo"), async (req: Request, r
       age: parseInt(age),
       gender,
       skills: parsedSkills,
-      photoUrl
+      photoUrl,
+      photoId,
     });
 
+    const savedUser = await data.save();
 
-    const savedUser=await data.save();
-
-    const token = jwt.sign({ _id: savedUser._id }, "PRASTAV", {
+    const token = jwt.sign({ _id: savedUser._id }, process.env.JWT_SECRET as string, {
       expiresIn: "7d",
     });
 
     res.cookie("token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    
-    res.status(201).send(data);
+
+    const { password: _pw, ...userWithoutPassword } = savedUser.toObject();
+    res.status(201).send(userWithoutPassword);
   } catch (err: any) {
-    res.status(400).send({ message: err.message || "Signup failed" });
+    res.status(400).json({ message: err.message || "Signup failed" });
   }
 });
-
 
 RequestRouterauth.post("/login", async (req: Request<{}, {}, LoginRequestBody>, res: Response) => {
   try {
@@ -75,7 +77,7 @@ RequestRouterauth.post("/login", async (req: Request<{}, {}, LoginRequestBody>, 
       return res.status(401).send("Invalid credentials");
     }
 
-    const token = jwt.sign({ _id: existingUser._id }, "PRASTAV", {
+    const token = jwt.sign({ _id: existingUser._id }, process.env.JWT_SECRET as string, {
       expiresIn: "7d",
     });
 

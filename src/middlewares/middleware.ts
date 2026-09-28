@@ -18,7 +18,7 @@ export const userAuth = async (req: Request, res: Response, next: NextFunction) 
       return res.status(401).send("Please Login!");
     }
 
-    const decodedMessage = jwt.verify(token, "PRASTAV") as { _id: string };
+    const decodedMessage = jwt.verify(token, process.env.JWT_SECRET as string) as { _id: string };
     const { _id } = decodedMessage;
 
     const targetUser = await User.findById(_id);

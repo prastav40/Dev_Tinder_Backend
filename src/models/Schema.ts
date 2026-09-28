@@ -1,17 +1,17 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-export interface IUser extends Document {
+interface IUser {
+  _id?: string;
   email: string;
   firstName: string;
   lastName: string;
   age: number;
-  gender: "male" | "female" | "other";
+  gender: string;
   password: string;
-  photoUrl: string;
-  skills: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  photoUrl?: string;
+  skills?: string[];
+  photoId?: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -28,7 +28,7 @@ const userSchema = new Schema<IUser>(
         },
         message: "{VALUE} is not a valid email address!"
       },
-      unique:true
+      unique: true
     },
     firstName: {
       type: String,
@@ -63,12 +63,17 @@ const userSchema = new Schema<IUser>(
       match: [
         /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/,
         "Password must contain at least one uppercase letter, one number, and one special character"
-      ]
+      ],
+      select: false
     },
     photoUrl: {
-    type: String,
-    default: "https://your-default-avatar-url.jpg" 
-   },
+      type: String,
+      default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+    },
+    photoId: {
+      type: String,
+      default: "",
+    },
     skills: {
       type: [String],
       default: [],
@@ -95,7 +100,6 @@ const userSchema = new Schema<IUser>(
 );
 
 userSchema.pre("save", async function () {
-  console.log(this);
   if (!this.isModified("password")) {
     return;
   }

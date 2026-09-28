@@ -43,7 +43,7 @@ RequestRouterRequest.get("/user/requests/pendingrequests", userAuth, async (req:
       status: "interested",
     }).populate(
       "fromUserId", 
-      "firstName lastName skills age about"
+      "firstName lastName skills age  photoUrl"
     );
 
     res.status(200).json({
@@ -97,8 +97,8 @@ RequestRouterRequest.get("/user/connections", userAuth, async (req: Request, res
         { toUserId: loggedInUser._id, status: "accepted" },
       ],
     })
-      .populate("fromUserId", "firstName lastName skills age about")
-      .populate("toUserId", "firstName lastName skills age about");
+      .populate("fromUserId", "firstName lastName skills age photoUrl")
+      .populate("toUserId", "firstName lastName skills age photoUrl");
 
     const data = connectionRequests.map((row) => {
       if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {

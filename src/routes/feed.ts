@@ -36,7 +36,7 @@ RequestRouterFeed.get("/feed", userAuth, async (req: Request, res: Response, nex
         { _id: { $nin: Array.from(hiddenUsers) } },
       ],
     })
-      .select("firstName lastName skills age aboutMe photoUrl gender")
+      .select("firstName lastName skills age  photoUrl gender")
       .skip(skip)
       .limit(limit);
     
